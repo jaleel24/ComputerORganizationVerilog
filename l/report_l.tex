@@ -1,0 +1,599 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+
+\usepackage{natbib} % Required to change bibliography style to APA
+\usepackage{amsmath} % Required for some math elements 
+\usepackage{listings}
+\usepackage{color}
+\usepackage{circuitikz}
+\usetikzlibrary{circuits.logic.IEC,calc}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Verilog,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  captionpos=b,                   % sets the caption-position to bottom
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4
+}
+
+\newenvironment{statement}{\par\vspace{50ex}}{\clearpage}
+
+\setlength\parindent{0pt} % Removes all indentation from paragraphs
+
+% Make numbering in the enumerate environment by letter rather than number (e.g. section 6)
+\renewcommand{\labelenumi}{\alph{enumi}.}
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT INFORMATION
+%----------------------------------------------------------------------------------------
+
+\title{\textsc{Lab L} \\ Hardware Building Blocks } % Title
+
+\author{\textsc{Mohammadamin Bandali}} % Author name
+
+\date{} % no date
+
+\begin{document}
+
+\maketitle % Insert the title, author and date
+
+\begin{center}
+\begin{tabular}{l r}
+Student Number: & XXXXXXXXX \\ 
+Date Performed: & March 31, 2015 \\ % Date the experiment was performed
+Lab Location: & Lassonde 1006 \\ 
+Course Name: & Computer Organization \\ 
+Course Code: & EECS 2021 \\ 
+Course Section: & Z, Lab-02\\ 
+Instructor: & Professor Peter Lian % Instructor/supervisor
+\end{tabular}
+\end{center}
+
+\begin{statement}
+“The work in this report is my own. I have read and understood York University
+academic honesty guidelines and I did not violate Senate Policy on Academic
+Honesty in writing this report.”
+\end{statement}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 1
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+The purpose of this lab is gaining more familiarity with the Verilog language
+and using it to build and use memory-less and combinational components.
+Throughout the lab the student is asked to:
+
+\begin{itemize}
+\item use abstraction to encapsulate a circuit in form of a separate module,
+
+\item enhance an existing 2-to-1 multiplexer to handle 2-bit busses instead
+of 1-bit wires and then extend it to 32-bits,
+
+\item design a 4-to-1 multiplexer,
+
+\item encapsulate a simple full adder as a module and use it to make a
+32-bit full adder,
+
+\item extend the full adder to perform subtraction as well,
+and thus have made a simple arithmetic unit,
+
+\item reading user input from the standard input, and
+
+\item finally, use all the previous pieces to build an ALU with
+logical \verb$AND$/\verb$OR$ and addition/subtraction and \verb$slt$ operations
+along with a \verb$zero$ flag exception.
+
+\end{itemize}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 2
+%----------------------------------------------------------------------------------------
+
+\section{Methods and Equipment}
+
+\begin{center}
+\begin{tabular}{l r}
+Computer: & MacBook Air 13-inch, Mid 2013 \\
+CPU: & 1.7GHz dual-core Intel Core i7 \\
+RAM: & 8GB 1600MHz LPDDR3 \\
+Operating System: & Arch GNU/Linux \\
+Kernel Version: & 3.17.6
+\end{tabular}
+\end{center}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 3
+%----------------------------------------------------------------------------------------
+
+\section{Experimental Procedure and Results}
+
+\subsection{LabL1}
+\begin{enumerate}
+\item[4. ] The mux behaves as expected:
+\begin{verbatim}
+PASS: a=0 b=0 c=0 z=0
+PASS: a=0 b=0 c=1 z=0
+PASS: a=0 b=1 c=0 z=0
+PASS: a=0 b=1 c=1 z=1
+PASS: a=1 b=0 c=0 z=1
+PASS: a=1 b=0 c=1 z=0
+PASS: a=1 b=1 c=0 z=1
+PASS: a=1 b=1 c=1 z=1
+\end{verbatim}
+
+  All tests pass and the mux is functioning properly.
+
+\end{enumerate}
+
+\subsection{LabL2}
+\begin{enumerate}
+\item[6. ] Having a multiplexer for 2-bit input/output is like having two
+multiplexers that each handle one bit of input/output. The two multiplexers
+share the same control bit. The shown circuit for \verb$yMux2$ is a schema
+for the given description of such multiplexer.
+
+\item[9. ] The enhanced (2-bit) mux (using \verb$yMux2$) behaves as expected:
+\begin{verbatim}
+PASS: a=00 b=00 c=0 z=00
+PASS: a=00 b=00 c=1 z=00
+PASS: a=00 b=01 c=0 z=00
+PASS: a=00 b=01 c=1 z=01
+PASS: a=00 b=10 c=0 z=00
+PASS: a=00 b=10 c=1 z=10
+PASS: a=00 b=11 c=0 z=00
+PASS: a=00 b=11 c=1 z=11
+PASS: a=01 b=00 c=0 z=01
+PASS: a=01 b=00 c=1 z=00
+PASS: a=01 b=01 c=0 z=01
+PASS: a=01 b=01 c=1 z=01
+PASS: a=01 b=10 c=0 z=01
+PASS: a=01 b=10 c=1 z=10
+PASS: a=01 b=11 c=0 z=01
+PASS: a=01 b=11 c=1 z=11
+PASS: a=10 b=00 c=0 z=10
+PASS: a=10 b=00 c=1 z=00
+PASS: a=10 b=01 c=0 z=10
+PASS: a=10 b=01 c=1 z=01
+PASS: a=10 b=10 c=0 z=10
+PASS: a=10 b=10 c=1 z=10
+PASS: a=10 b=11 c=0 z=10
+PASS: a=10 b=11 c=1 z=11
+PASS: a=11 b=00 c=0 z=11
+PASS: a=11 b=00 c=1 z=00
+PASS: a=11 b=01 c=0 z=11
+PASS: a=11 b=01 c=1 z=01
+PASS: a=11 b=10 c=0 z=11
+PASS: a=11 b=10 c=1 z=10
+PASS: a=11 b=11 c=0 z=11
+PASS: a=11 b=11 c=1 z=11
+\end{verbatim}
+
+  All tests still pass and the 2-bit mux is working correctly.
+
+\end{enumerate}
+
+\subsection{LabL3}
+\begin{enumerate}
+\item[14. ] The behaviour using a 32-bit width bus is exactly the same
+(same output as LabL2). However, the binary representations of the outputs
+are now 32-bit wide so I haven't included them.
+
+\item[17. ] All tests pass with randomly generated values for \verb$a$,
+\verb$b$ and \verb$c$:
+\begin{verbatim}
+PASS: a=00010010000101010011010100100100
+      b=11000000100010010101111010000001
+      c=1 z=11000000100010010101111010000001
+PASS: a=10110001111100000101011001100011
+      b=00000110101110010111101100001101
+      c=1 z=00000110101110010111101100001101
+PASS: a=10110010110000101000010001100101
+      b=10001001001101110101001000010010
+      c=1 z=10001001001101110101001000010010
+PASS: a=00000110110101111100110100001101
+      b=00111011001000111111000101110110
+      c=1 z=00111011001000111111000101110110
+PASS: a=01110110110101000101011111101101
+      b=01000110001011011111011110001100
+      c=1 z=01000110001011011111011110001100
+PASS: a=11100011001101110010010011000110
+      b=11100010111101111000010011000101
+      c=0 z=11100011001101110010010011000110
+PASS: a=01110010101011111111011111100101
+      b=10111011110100100111001001110111
+      c=0 z=01110010101011111111011111100101
+PASS: a=01000111111011001101101110001111
+      b=01111001001100000110100111110010
+      c=0 z=01000111111011001101101110001111
+PASS: a=11110100000000000111101011101000
+      b=11100010110010100100111011000101
+      c=0 z=11110100000000000111101011101000
+PASS: a=11011110100011100010100010111101
+      b=10010110101010110101100000101101
+      c=1 z=10010110101010110101100000101101
+\end{verbatim}
+
+\item[18. ] \verb$(10)$ is the number of times the \verb$repeat$ block is executed.
+After changing it to \verb$(500)$ and modifying the code to display only if a
+test fails, there is no output, which means all the tests have passed.
+
+\end{enumerate}
+
+\pagebreak
+
+\subsection{LabL4}
+\begin{enumerate}
+\item[21. ] $ $
+
+\begin{circuitikz}[circuit logic IEC] 
+\node[and gate,inputs={nn},and gate IEC symbol={},text height=1cm,] (A) {};
+\node[and gate,inputs={nn},and gate IEC symbol={},text height=1cm,] (B) at (0,2) {};
+\node[and gate,inputs={nn},and gate IEC symbol={},text height=3cm,] (C) at (2.5,1) {};
+\draw  ([xshift=-10pt]A.input 1) node[left] {$a_{2}$} -- (A.input 1);
+\draw  ([xshift=-10pt]A.input 2) node[left] {$a_{3}$} -- (A.input 2);
+\draw  ([xshift=-10pt]B.input 1) node[left] {$a_{0}$} -- (B.input 1);
+\draw  ([xshift=-10pt]B.input 2) node[left] {$a_{1}$} -- (B.input 2);
+\draw (A.output) -- ++(1.9,0) node[above left] {$zHi$};
+\draw (A.south) -- ++(-90:0.3) |- ++(-15pt,0) node[left] {$c[0]$};
+\draw (B.output) -- ++(1.9,0) node[below left] {$zLo$};
+\draw (B.south) -- ++(-90:0.3) |- ++(-15pt,0) node[left] {$c[0]$};
+\draw (C.output) -- ++(10pt,0) node[right] {$z$};
+\draw (C.south) -- ++(-90:0.3) |- ++(-15pt,0) node[left] {$c[1]$};
+\end{circuitikz}
+
+Let's verify that this circuit is a 4-to-1 mux:
+\begin{itemize}
+\item c=0: \linebreak
+\verb$c[0]=0$ $\rightarrow$ $zLo=a_0$, $zHi=a_2$ \, \verb$c[1]=0$ $\rightarrow$ $z=zLo=a_0$
+\item c=1 \linebreak
+\verb$c[0]=1$ $\rightarrow$ $zLo=a_1$, $zHi=a_3$ \, \verb$c[1]=0$ $\rightarrow$ $z=zLo=a_1$
+\item c=2 \linebreak
+\verb$c[0]=0$ $\rightarrow$ $zLo=a_0$, $zHi=a_2$ \, \verb$c[1]=1$ $\rightarrow$ $z=zHi=a_2$
+\item c=3 \linebreak
+\verb$c[0]=1$ $\rightarrow$ $zLo=a_1$, $zHi=a_3$ \, \verb$c[1]=1$ $\rightarrow$ $z=zHi=a_3$
+\end{itemize}
+
+This is indeed a 4-to-1 multiplexer.
+
+\item[22. ] \verb$yMux4to1$ was tested with several thousand values each
+checked against their respective oracle (all done in \verb$LabL4.v$) and
+all the tests passed. Therefore the four-way mux behaves as expected.
+
+\end{enumerate}
+
+\subsection{LabL5}
+\begin{enumerate}
+\item[25. ] \verb$LabL5.v$ was created to perform exhaustive testing
+on \verb$yAdder1$ and output any errors (i.e. if MSb of \verb$a+b+cin$
+is not equal to \verb$cout$ or if the LSb is different than \verb$z$).
+The output was empty (all tests passed).
+\end{enumerate}
+
+\subsection{LabL6}
+\begin{enumerate}
+\item[26. ] To build a 32-bit full adder, 32 (1-bit) full adders are cascaded,
+each cell adds the corresponding bits of \verb$a$ and \verb$b$ and the
+carry out of each cell is directed into the carry in of the higher order cell.
+
+\item[28. ] In the case of multiplexers, the internal muxes function
+independently, each selecting between two inputs and they all work in parallel.
+Whereas with full adders, the result of each addition depends on the previous
+stage, since the carries are cascaded and each addition has to be performed to
+be able to do the next stage addition (pseudo-parallel).
+
+\item[29. ] Here's a sample output of \verb$LabL6.v$ (with a repeat block that
+repeats 3 times) testing the 32-bit full adder:
+\begin{verbatim}
+PASS: a=00010010000101010011010100100100
+      b=11000000100010010101111010000001
+    cin=0
+      z=11010010100111101001001110100101
+ expect=11010010100111101001001110100101
+PASS: a=10000100100001001101011000001001
+      b=10110001111100000101011001100011
+    cin=0
+      z=00110110011101010010110001101100
+ expect=00110110011101010010110001101100
+PASS: a=00000110101110010111101100001101
+      b=01000110110111111001100110001101
+    cin=0
+      z=01001101100110010001010010011010
+ expect=01001101100110010001010010011010
+\end{verbatim}
+  All tests pass. The repeat block can easily be adjusted to perform more tests:
+a repeat block doing 10000 iterations was also tested, passing all the tests.
+Therefore the adder generates correct results.
+\end{enumerate}
+
+\subsection{LabL7}
+\begin{enumerate}
+\item[33. ] After adding \verb$signed$ keyword after each \verb$reg$ and
+\verb$wire$ declaration, the tests are still passing. This confirms that
+the correctness of the adder is independent of interpretation.
+\end{enumerate}
+
+\subsection{LabL8}
+\begin{enumerate}
+\item[34. ] Subtraction can be done with one adder: if we set \verb$cin=1$,
+we're telling the adder that we have a carry (of 1), so in effect, we're adding
+one to the number. Now, we just have to \verb$NOT$ the second number and add it
+to the first one. This is how we do a subtraction in 2's Complement. If we use
+this technique along with a mux (to decide whether we should \verb$NOT$ the
+second number or not), we can easily have an arithmetic circuit that takes
+two numbers and a control bit, and will subtract the numbers if the \verb$ctrl$
+bit is 1 and otherwise add them.
+
+\pagebreak
+
+\item[39. ]
+\begin{verbatim}
+PASS: a=  303379748
+      b=-1064739199
+   ctrl=1
+      z= 1368118947
+ expect= 1368118947
+PASS: a=-1309649309
+      b=  112818957
+   ctrl=1
+      z=-1422468266
+ expect=-1422468266
+PASS: a=-1295874971
+      b=-1992863214
+   ctrl=1
+      z=  696988243
+ expect=  696988243
+PASS: a=  114806029
+      b=  992211318
+   ctrl=1
+      z= -877405289
+ expect= -877405289
+PASS: a= 1993627629
+      b= 1177417612
+   ctrl=1
+      z=  816210017
+ expect=  816210017
+PASS: a= -482925370
+      b= -487095099
+   ctrl=0
+      z= -970020469
+ expect= -970020469
+\end{verbatim}
+  \verb$yArith$ works as expected, as demonstrated with the above random test cases.
+\end{enumerate}
+
+\pagebreak
+
+\subsection{LabL9}
+\begin{enumerate}
+\item[44. ] The ALU works correctly and as expected on all four operations.
+Here's some sample output (2 tests for each operation):
+\begin{verbatim}
+$ vvp a.out +op=0
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a&b=00000000000000010001010000000000
+
+PASS:  a=10000100100001001101011000001001
+       b=10110001111100000101011001100011
+     a&b=10000000100000000101011000000001
+
+
+$ vvp a.out +op=1
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a|b=11010010100111010111111110100101
+
+PASS:  a=10000100100001001101011000001001
+       b=10110001111100000101011001100011
+     a|b=10110101111101001101011001101011
+
+
+$ vvp a.out +op=2
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a+b=11010010100111101001001110100101
+
+PASS:  a=10000100100001001101011000001001
+       b=10110001111100000101011001100011
+     a+b=00110110011101010010110001101100
+
+
+$ vvp a.out +op=6
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a-b=01010001100010111101011010100011
+
+PASS:  a=10000100100001001101011000001001
+       b=10110001111100000101011001100011
+     a-b=11010010100101000111111110100110
+\end{verbatim}
+  Note: \verb#$# is the shell prompt.
+\end{enumerate}
+
+\subsection{LabL10}
+\begin{enumerate}
+\item[51. ] Sample output for the \verb$slt$ operation, all tests passing:
+\begin{verbatim}
+$ vvp a.out +op=7
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a<b=00000000000000000000000000000000
+
+PASS:  a=10000100100001001101011000001001
+       b=10110001111100000101011001100011
+     a<b=00000000000000000000000000000001
+
+PASS:  a=00000110101110010111101100001101
+       b=01000110110111111001100110001101
+     a<b=00000000000000000000000000000001
+
+PASS:  a=10110010110000101000010001100101
+       b=10001001001101110101001000010010
+     a<b=00000000000000000000000000000000
+
+PASS:  a=00000000111100111110001100000001
+       b=00000110110101111100110100001101
+     a<b=00000000000000000000000000000001
+\end{verbatim}
+\end{enumerate}
+
+\subsection{LabL11}
+\begin{enumerate}
+\item[52. ] This \textit{algorithm} is basically the \verb$NOR$ gate, and it
+only produces 1 when all inputs are 0. Let's take a look at the truth table
+of \verb$NOR$:
+\begin{displaymath}
+\begin{array}{|c|c|c|}
+\hline
+   P
+ & Q
+ & P \downarrow Q \\
+\hline
+0 & 0 & 1 \\
+0 & 1 & 0 \\
+1 & 0 & 0 \\
+1 & 1 & 0 \\
+\hline
+\end{array}
+\end{displaymath}
+The only difference between this table and our algorithm is that we have
+32 inputs instead of 2. The truth table for 32 inputs will be \textit{huge}
+but again the only case the result of the function is 1 will be the case where
+all 32 values are 0; because even if one value is 1, the result of \verb$OR$
+will be 1, and \verb$NOT$ of that will be 0.
+
+\pagebreak
+
+\item[55. ] Here are some sample outputs after implementing the
+\verb$zero$ (zero output detection):
+\begin{verbatim}
+$ vvp a.out +op=7
+PASS:  a=00010010000101010011010100100100
+       b=11000000100010010101111010000001
+     a<b=00000000000000000000000000000000
+    zero=1
+
+PASS:  a=10110001111100000101011001100011
+       b=00000110101110010111101100001101
+     a<b=00000000000000000000000000000001
+    zero=0
+
+PASS:  a=10110010110000101000010001100101
+       b=10001001001101110101001000010010
+     a<b=00000000000000000000000000000000
+    zero=1
+\end{verbatim}
+\end{enumerate}
+
+\subsection{CPU}
+\begin{enumerate}
+\item[57. ] \verb$cpu.z$ was tested with existing modules (e.g. \verb$LabL9.v$,
+\verb$LabL11.v$, etc) and it works correctly.
+\end{enumerate}
+
+%----------------------------------------------------------------------------------------
+%	SECTION 4
+%----------------------------------------------------------------------------------------
+
+\section{Evaluations and Conclusions}
+
+Since I consider myself to be mostly a \textit{software guy}, doing the
+exercises and following the manual of this lab was a new and pleasant
+experience; it's very interesting to go further down towards the hardware
+and to learn how simple [combinational] circuits work together to make up
+various processing units (such as ALU). And to be able to design a CPU
+(although very limited and perhaps overly simplified), is very exciting.\newline
+
+I think at one point or another we've all been told that
+\textit{computers only know 0's and 1's}, and although at heart we know that's
+true, nowadays that \verb$C$ is considered a low-level language, imagining
+\textit{how} that is might not be very easy, and that's why this course is
+so interesting to me because it takes me on a journey to lower levels and areas
+that I've always taken as granted, and asks me to implement them!
+
+\pagebreak
+
+%----------------------------------------------------------------------------------------
+%	SECTION 5
+%----------------------------------------------------------------------------------------
+
+\section{Source Codes}
+
+
+\subsection{LabL1}
+\lstinputlisting[language=verilog]{yMux1.v}
+\lstinputlisting[language=verilog]{LabL1.v}
+
+\subsection{LabL2}
+\lstinputlisting[language=verilog]{yMux2.v}
+\lstinputlisting[language=verilog]{LabL2.v}
+
+\subsection{LabL3}
+\lstinputlisting[language=verilog]{yMux.v}
+\lstinputlisting[language=verilog]{LabL3.v}
+
+\subsection{LabL4}
+\lstinputlisting[language=verilog]{yMux4to1.v}
+\lstinputlisting[language=verilog]{LabL4.v}
+
+\subsection{LabL5}
+\lstinputlisting[language=verilog]{yAdder1.v}
+\lstinputlisting[language=verilog]{LabL5.v}
+
+\subsection{LabL6}
+\lstinputlisting[language=verilog]{yAdder.v}
+\lstinputlisting[language=verilog]{LabL6.v}
+
+\pagebreak
+
+\subsection{LabL7}
+\lstinputlisting[language=verilog]{LabL7.v}
+
+\subsection{LabL8}
+\lstinputlisting[language=verilog]{yArith.v}
+\lstinputlisting[language=verilog]{LabL8.v}
+
+\subsection{LabL9}
+\verb$yAlu.v$: See \textbf{LabL11} sources below (completely implemented)
+
+\verb$LabL9.v$:
+\lstinputlisting[language=verilog]{LabL9.v}
+
+\subsection{LabL10}
+\verb$yAlu.v$: See \textbf{LabL11} sources below (completely implemented)
+
+\verb$LabL10.v$:
+\lstinputlisting[language=verilog]{LabL10.v}
+
+\subsection{LabL11}
+\lstinputlisting[language=verilog]{yAlu.v}
+\lstinputlisting[language=verilog]{LabL11.v}
+
+\pagebreak
+
+\subsection{CPU}
+\lstinputlisting[language=verilog]{cpu.v}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
